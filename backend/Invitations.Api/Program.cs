@@ -6,6 +6,7 @@ using Invitations.Api.Features.Events;
 using Invitations.Api.Features.Invitations;
 using Invitations.Api.Features.Plans;
 using Invitations.Api.Features.Public;
+using Invitations.Api.Features.Seating;
 using Invitations.Api.Features.Staff;
 using Invitations.Api.Features.Templates;
 using System.Threading.RateLimiting;
@@ -123,6 +124,7 @@ api.MapEventEndpoints();
 api.MapInvitationEndpoints();
 api.MapTemplateEndpoints();
 api.MapPublicInvitationEndpoints();
+api.MapSeatingEndpoints();
 api.MapStaffAccessEndpoints();
 api.MapStaffEndpoints();
 

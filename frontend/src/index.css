@@ -262,3 +262,55 @@ button.big { padding: 12px 16px; font-size: 1.05rem; }
 .search input { font-size: 1.1rem; padding: 12px; }
 .search-results { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
 .search-results button { width: 100%; display: grid; text-align: left; white-space: normal; padding: 10px 12px; }
+
+/* --- Mesas: editor del plano --- */
+.tabs-inline { display: flex; gap: 6px; }
+.plan-editor { display: grid; gap: 12px; }
+.plan-toolbar { display: grid; gap: 6px; }
+.plan-tools { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.plan-body { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; align-items: start; }
+.plan-canvas { min-width: 0; display: grid; gap: 6px; }
+.plan-canvas canvas { border-radius: 8px; touch-action: none; }
+.plan-side { position: sticky; top: 16px; }
+.plan-side h3 { margin: 0; font-size: 1.05rem; }
+.plan-save { display: grid; gap: 6px; border-top: 1px solid var(--border); padding-top: 12px; }
+@media (max-width: 900px) {
+  .plan-body { grid-template-columns: 1fr; }
+  .plan-side { position: static; }
+}
+
+/* --- Mesas: asignación de invitados --- */
+.assign-layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 16px; align-items: start; }
+.assign-unassigned { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; align-content: start; }
+.assign-column-header { display: grid; gap: 8px; }
+.assign-column-header h3 { margin: 0; font-size: 1.05rem; }
+.assign-tables { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.assign-group { display: grid; gap: 4px; }
+.assign-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.assign-group-title, .chip-guest {
+  font: inherit; text-align: left; white-space: normal; cursor: grab; touch-action: none;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text);
+}
+.assign-group-title { font-weight: 600; font-size: 0.9rem; padding: 4px 8px; border-radius: 6px; background: transparent; border-style: dashed; }
+.chip-guest { font-size: 0.85rem; padding: 3px 10px; border-radius: 999px; }
+.chip-guest.dragging, .assign-group-title.dragging { opacity: 0.35; }
+.chip-guest.picked, .assign-group-title.picked { outline: 2px solid var(--accent); background: var(--accent-soft); }
+.chip-overlay {
+  padding: 4px 12px; border-radius: 999px; background: var(--accent); color: var(--on-accent);
+  font-size: 0.9rem; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); cursor: grabbing; white-space: nowrap;
+}
+.table-card { gap: 8px; align-content: start; min-height: 110px; transition: border-color 0.15s, background 0.15s; }
+.table-card-header { display: flex; justify-content: space-between; gap: 8px; }
+.table-card-header .full { color: var(--ok); font-weight: 600; }
+.table-card-bar { height: 4px; border-radius: 999px; background: var(--muted-soft); overflow: hidden; }
+.table-card-bar div { height: 100%; background: var(--accent); }
+.table-card-bar div.full { background: var(--ok); }
+.table-card.over, .assign-unassigned.over { border-color: var(--accent); background: var(--accent-soft); }
+.table-card.pick-target, .assign-unassigned.pick-target { border-style: dashed; border-color: var(--accent); cursor: pointer; }
+.table-card.pick-full { opacity: 0.5; }
+.table-card.highlight { border-color: var(--accent); }
+.pick-hint { margin: 0; padding: 8px 12px; border-radius: 8px; background: var(--accent-soft); }
+@media (max-width: 900px) {
+  .assign-layout { grid-template-columns: 1fr; }
+  .assign-unassigned { position: static; max-height: 50vh; }
+}
