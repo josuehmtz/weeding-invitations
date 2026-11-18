@@ -16,7 +16,10 @@ public static class EventEndpoints
     public record EventDetailDto(
         Guid Id, string Title, EventType Type, EventStatus Status, DateTimeOffset StartsAt,
         string? VenueName, string? VenueAddress, string? MapsUrl, DateTimeOffset? RsvpDeadline,
-        int InvitationCount, int TotalPasses, int PassLimit);
+        int InvitationCount, int TotalPasses, int PassLimit, RsvpSummaryDto Rsvp);
+
+    /// <summary>Resumen de confirmaciones: invitaciones por estado y personas confirmadas.</summary>
+    public record RsvpSummaryDto(int Confirmed, int Declined, int Pending, int ConfirmedPasses, int PendingPasses);
 
     public record SaveEventRequest(
         [property: Required, StringLength(200, MinimumLength = 1)] string Title,
@@ -112,14 +115,20 @@ public static class EventEndpoints
 
     private static async Task<EventDetailDto> ToDetailAsync(AppDbContext db, Event ev)
     {
-        var stats = await db.Invitations.Where(i => i.EventId == ev.Id)
-            .GroupBy(_ => 1)
-            .Select(g => new { Count = g.Count(), Passes = g.Sum(i => i.Passes) })
-            .FirstOrDefaultAsync();
+        var byStatus = await db.Invitations.Where(i => i.EventId == ev.Id)
+            .GroupBy(i => i.RsvpStatus)
+            .Select(g => new { Status = g.Key, Count = g.Count(), Passes = g.Sum(i => i.Passes), Confirmed = g.Sum(i => i.ConfirmedPasses) })
+            .ToListAsync();
+
+        int CountOf(RsvpStatus s) => byStatus.Where(x => x.Status == s).Sum(x => x.Count);
+        var rsvp = new RsvpSummaryDto(
+            CountOf(RsvpStatus.Confirmed), CountOf(RsvpStatus.Declined), CountOf(RsvpStatus.Pending),
+            ConfirmedPasses: byStatus.Sum(x => x.Confirmed),
+            PendingPasses: byStatus.Where(x => x.Status == RsvpStatus.Pending).Sum(x => x.Passes));
 
         return new EventDetailDto(
             ev.Id, ev.Title, ev.Type, ev.Status, ev.StartsAt, ev.VenueName, ev.VenueAddress,
-            ev.MapsUrl, ev.RsvpDeadline, stats?.Count ?? 0, stats?.Passes ?? 0,
-            await db.PassLimitAsync(ev));
+            ev.MapsUrl, ev.RsvpDeadline, byStatus.Sum(x => x.Count), byStatus.Sum(x => x.Passes),
+            await db.PassLimitAsync(ev), rsvp);
     }
 }

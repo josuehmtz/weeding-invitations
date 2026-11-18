@@ -137,3 +137,37 @@
 .tpl-moderna .tpl-itinerary li { grid-template-columns: 60px 1fr; }
 .tpl-moderna .tpl-itinerary-time { text-align: left; }
 .tpl-moderna .tpl-button { border-radius: 0; background: var(--tpl-primary); color: var(--tpl-bg); }
+
+/* --- Confirmación de asistencia --- */
+.tpl-rsvp { display: grid; gap: 12px; justify-items: center; width: 100%; max-width: 380px; margin: 0 auto; }
+.tpl-moderna .tpl-rsvp { justify-items: start; margin: 0; }
+.tpl-form { justify-items: stretch; text-align: left; }
+.tpl-form label, .tpl-form fieldset { display: grid; gap: 6px; font-size: 0.95rem; }
+.tpl-form fieldset { border: 0; padding: 0; margin: 0; }
+.tpl-form legend { padding: 0; margin-bottom: 6px; }
+.tpl-form input, .tpl-form select, .tpl-form textarea {
+  font: inherit; font-size: 1rem; color: var(--tpl-text); background: color-mix(in srgb, var(--tpl-bg) 80%, white);
+  border: 1px solid var(--tpl-line); border-radius: 8px; padding: 10px 12px; width: 100%;
+}
+.tpl-form input:focus-visible, .tpl-form select:focus-visible, .tpl-form textarea:focus-visible,
+.tpl-choice button:focus-visible, .tpl-button:focus-visible, .tpl-link:focus-visible {
+  outline: 2px solid var(--tpl-primary); outline-offset: 2px;
+}
+.tpl-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tpl-choice button {
+  font: inherit; cursor: pointer; padding: 12px 8px; border-radius: 10px;
+  border: 1px solid var(--tpl-line); background: transparent; color: var(--tpl-text);
+}
+.tpl-choice button.selected { background: var(--tpl-primary); border-color: var(--tpl-primary); color: var(--tpl-bg); }
+.tpl-form-actions { display: grid; gap: 8px; justify-items: center; }
+.tpl-button-solid { background: var(--tpl-primary); color: var(--tpl-bg); cursor: pointer; font-size: 0.85rem; }
+.tpl-button-solid:disabled { opacity: 0.5; cursor: default; }
+.tpl-link {
+  font: inherit; font-size: 0.95rem; background: none; border: 0; padding: 4px; cursor: pointer;
+  color: var(--tpl-primary); text-decoration: underline; text-underline-offset: 3px;
+}
+.tpl-error { color: #b42318; }
+.tpl-rsvp-names { font-style: italic; opacity: 0.85; }
+.tpl-qr { display: grid; gap: 10px; justify-items: center; }
+.qr-image { width: 220px; height: 220px; border-radius: 12px; background: #fff; padding: 6px; border: 1px solid var(--tpl-line); }
+.qr-placeholder { width: 220px; height: 220px; }

@@ -1,14 +1,16 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useParams } from 'react-router'
 import { ApiError } from '../api/client'
 import { getPublicInvitation } from '../api/public'
 import InvitationView from '../templates/InvitationView'
 import { getTemplate, resolveConfig } from '../templates/registry'
+import RsvpPanel from '../templates/RsvpPanel'
 
 /** Invitación pública que abre cada invitado desde su link (y después desde el QR). */
 export default function InvitationPage() {
   const { token = '' } = useParams()
+  const queryClient = useQueryClient()
   const invitation = useQuery({
     queryKey: ['public-invitation', token],
     queryFn: () => getPublicInvitation(token),
@@ -44,7 +46,21 @@ export default function InvitationPage() {
       {guest.isPreview && (
         <div className="preview-banner">Vista previa · Esta invitación aún no está publicada</div>
       )}
-      <InvitationView templateKey={key} config={config} event={event} guest={guest} />
+      <InvitationView
+        templateKey={key}
+        config={config}
+        event={event}
+        guest={guest}
+        rsvpSlot={
+          <RsvpPanel
+            token={token}
+            invitation={invitation.data}
+            // El color del texto suele ser oscuro: da buen contraste para que el QR se lea bien.
+            qrColor={config.colors.text}
+            onUpdated={(inv) => queryClient.setQueryData(['public-invitation', token], inv)}
+          />
+        }
+      />
     </div>
   )
 }

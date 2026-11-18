@@ -63,6 +63,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         b.Entity<Guest>(e =>
         {
             e.Property(x => x.Name).HasMaxLength(200);
+            // El Id lo genera el dominio (RsvpRules.SyncGuests). Sin esto, EF trataría a una persona
+            // nueva agregada a invitation.Guests como existente e intentaría un UPDATE.
+            e.Property(x => x.Id).ValueGeneratedNever();
             // Si se borra una mesa, sus invitados quedan sin asignar.
             e.HasOne(x => x.Table).WithMany(t => t.Guests)
                 .HasForeignKey(x => x.TableId).OnDelete(DeleteBehavior.SetNull);

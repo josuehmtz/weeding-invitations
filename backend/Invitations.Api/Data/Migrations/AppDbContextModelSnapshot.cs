@@ -234,7 +234,6 @@ namespace Invitations.Api.Data.Migrations
             modelBuilder.Entity("Invitations.Api.Domain.Guest", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("InvitationId")

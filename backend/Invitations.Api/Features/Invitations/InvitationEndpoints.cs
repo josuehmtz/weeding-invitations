@@ -11,7 +11,11 @@ public static class InvitationEndpoints
 {
     public record InvitationDto(
         Guid Id, string DisplayName, int Passes, string? Phone, string Token,
-        RsvpStatus RsvpStatus, int ConfirmedPasses);
+        RsvpStatus RsvpStatus, int ConfirmedPasses, DateTimeOffset? RespondedAt, string? Message,
+        IReadOnlyList<string> GuestNames);
+
+    /// <summary>El cliente registra a mano una respuesta (p. ej. le avisaron por teléfono).</summary>
+    public record ManualRsvpRequest(bool Attending, int ConfirmedPasses, IReadOnlyList<string>? GuestNames);
 
     public record SaveInvitationRequest(
         [property: Required, StringLength(200, MinimumLength = 1)] string DisplayName,
@@ -30,11 +34,12 @@ public static class InvitationEndpoints
             if (!await db.Events.OwnedBy(user.GetUserId()).AnyAsync(e => e.Id == eventId))
                 return Results.NotFound();
 
-            var list = await db.Invitations.Where(i => i.EventId == eventId)
+            var list = await db.Invitations.AsNoTracking()
+                .Where(i => i.EventId == eventId)
+                .Include(i => i.Guests)
                 .OrderBy(i => i.DisplayName)
-                .Select(i => ToDto(i))
                 .ToListAsync();
-            return Results.Ok(list);
+            return Results.Ok(list.Select(ToDto));
         });
 
         group.MapPost("/", async (Guid eventId, SaveInvitationRequest req, ClaimsPrincipal user, AppDbContext db) =>
@@ -62,7 +67,8 @@ public static class InvitationEndpoints
             if (ev is null) return Results.NotFound();
             if (Editable(ev) is { } blocked) return blocked;
 
-            var inv = await db.Invitations.FirstOrDefaultAsync(i => i.Id == id && i.EventId == eventId);
+            var inv = await db.Invitations.Include(i => i.Guests)
+                .FirstOrDefaultAsync(i => i.Id == id && i.EventId == eventId);
             if (inv is null) return Results.NotFound();
             if (req.Passes < inv.ConfirmedPasses)
                 return Results.Problem(
@@ -71,6 +77,26 @@ public static class InvitationEndpoints
             if (await CheckLimitAsync(db, ev, inv.Passes, req.Passes) is { } overLimit) return overLimit;
 
             Apply(inv, req);
+            await db.SaveChangesAsync();
+            return Results.Ok(ToDto(inv));
+        });
+
+        group.MapPut("/{id:guid}/rsvp", async (Guid eventId, Guid id, ManualRsvpRequest req, ClaimsPrincipal user,
+            AppDbContext db, TimeProvider clock) =>
+        {
+            var ev = await db.Events.OwnedBy(user.GetUserId()).FirstOrDefaultAsync(e => e.Id == eventId);
+            if (ev is null) return Results.NotFound();
+            if (Editable(ev) is { } blocked) return blocked;
+
+            var inv = await db.Invitations.Include(i => i.Guests)
+                .FirstOrDefaultAsync(i => i.Id == id && i.EventId == eventId);
+            if (inv is null) return Results.NotFound();
+
+            // El cliente puede registrar respuestas aunque haya pasado la fecha límite.
+            if (RsvpRules.Validate(inv, req.Attending, req.ConfirmedPasses, req.GuestNames) is { } invalid)
+                return Results.ValidationProblem(new Dictionary<string, string[]> { ["rsvp"] = [invalid] });
+
+            RsvpRules.Apply(inv, req.Attending, req.ConfirmedPasses, req.GuestNames, inv.Message, clock.GetUtcNow());
             await db.SaveChangesAsync();
             return Results.Ok(ToDto(inv));
         });
@@ -112,5 +138,6 @@ public static class InvitationEndpoints
     }
 
     private static InvitationDto ToDto(Invitation i) =>
-        new(i.Id, i.DisplayName, i.Passes, i.Phone, i.Token, i.RsvpStatus, i.ConfirmedPasses);
+        new(i.Id, i.DisplayName, i.Passes, i.Phone, i.Token, i.RsvpStatus, i.ConfirmedPasses,
+            i.RespondedAt, i.Message, i.Guests.OrderBy(g => g.Id).Select(g => g.Name).ToList());
 }

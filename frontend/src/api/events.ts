@@ -31,6 +31,15 @@ export interface EventDetail extends EventSummary {
   mapsUrl: string | null
   rsvpDeadline: string | null
   passLimit: number
+  rsvp: RsvpSummary
+}
+
+export interface RsvpSummary {
+  confirmed: number
+  declined: number
+  pending: number
+  confirmedPasses: number
+  pendingPasses: number
 }
 
 export interface SaveEvent {

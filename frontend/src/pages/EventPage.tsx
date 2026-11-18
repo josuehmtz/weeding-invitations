@@ -123,7 +123,32 @@ export default function EventPage() {
         </section>
       )}
 
-      <InvitationsPanel eventId={ev.id} remainingPasses={remaining} readOnly={readOnly} />
+      {ev.invitationCount > 0 && (
+        <section className="stats" aria-label="Resumen de confirmaciones">
+          <div className="stat">
+            <span className="stat-value">{ev.rsvp.confirmedPasses}</span>
+            <span className="stat-label">personas confirmadas</span>
+            <span className="muted small">{plural(ev.rsvp.confirmed, 'invitación', 'invitaciones')}</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">{ev.rsvp.pendingPasses}</span>
+            <span className="stat-label">personas sin responder</span>
+            <span className="muted small">{plural(ev.rsvp.pending, 'invitación', 'invitaciones')}</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">{ev.rsvp.declined}</span>
+            <span className="stat-label">{ev.rsvp.declined === 1 ? 'invitación no asistirá' : 'invitaciones no asistirán'}</span>
+          </div>
+        </section>
+      )}
+
+      <InvitationsPanel
+        eventId={ev.id}
+        eventTitle={ev.title}
+        rsvpDeadline={ev.rsvpDeadline}
+        remainingPasses={remaining}
+        readOnly={readOnly}
+      />
     </main>
   )
 }

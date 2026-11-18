@@ -16,6 +16,15 @@ export interface Invitation {
   token: string
   rsvpStatus: RsvpStatus
   confirmedPasses: number
+  respondedAt: string | null
+  message: string | null
+  guestNames: string[]
+}
+
+export interface ManualRsvp {
+  attending: boolean
+  confirmedPasses: number
+  guestNames?: string[]
 }
 
 export interface SaveInvitation {
@@ -31,7 +40,9 @@ export const createInvitation = (eventId: string, i: SaveInvitation) =>
   send<Invitation>('POST', base(eventId), i)
 export const updateInvitation = (eventId: string, id: string, i: SaveInvitation) =>
   send<Invitation>('PUT', `${base(eventId)}/${id}`, i)
-export const deleteInvitation = (eventId: string, id: string) =>
+export const setRsvp = (eventId: string, id: string, rsvp: ManualRsvp) =>
+  send<Invitation>('PUT', `${base(eventId)}/${id}/rsvp`, rsvp)
+export const deleteInvitation =(eventId: string, id: string) =>
   send<void>('DELETE', `${base(eventId)}/${id}`)
 
 /** Link público de la invitación (el mismo que irá en el QR). */

@@ -21,6 +21,8 @@ if (!string.IsNullOrEmpty(port))
 
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
+// Reloj inyectable: las reglas de fechas (confirmación, inicio del evento) se pueden probar.
+builder.Services.AddSingleton(TimeProvider.System);
 // Valida automáticamente los atributos [Required], [Range], etc. de los requests (.NET 10).
 builder.Services.AddValidation();
 // Enums como texto en JSON ("Wedding" en vez de 0): más legible para el front.
