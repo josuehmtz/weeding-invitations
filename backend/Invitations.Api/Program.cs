@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Invitations.Api.Data;
 using Invitations.Api.Domain;
 using Invitations.Api.Features.Auth;
+using Invitations.Api.Features.Billing;
 using Invitations.Api.Features.Events;
 using Invitations.Api.Features.Invitations;
 using Invitations.Api.Features.Plans;
@@ -40,6 +41,10 @@ builder.Services.AddRateLimiter(o =>
             ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             _ => new FixedWindowRateLimiterOptions { PermitLimit = 60, Window = TimeSpan.FromMinutes(1) }));
 });
+
+// Pagos (Stripe). Las llaves vienen de user-secrets o variables de entorno (Stripe__SecretKey, Stripe__WebhookSecret).
+builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection("Stripe"));
+builder.Services.AddSingleton<IPaymentGateway, StripePaymentGateway>();
 
 builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseNpgsql(ConnectionStrings.Normalize(builder.Configuration.GetConnectionString("Default"))));
@@ -125,6 +130,7 @@ api.MapInvitationEndpoints();
 api.MapTemplateEndpoints();
 api.MapPublicInvitationEndpoints();
 api.MapSeatingEndpoints();
+api.MapBillingEndpoints();
 api.MapStaffAccessEndpoints();
 api.MapStaffEndpoints();
 

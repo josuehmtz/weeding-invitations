@@ -61,6 +61,26 @@ dotnet ef migrations add NombreDelCambio --project Invitations.Api --output-dir 
 1. Crear base en Neon y poner su cadena de conexión en la variable `ConnectionStrings__Default` del backend.
 2. Correr migraciones contra Neon: `dotnet ef database update --connection "<cadena Neon>"`.
 3. Desplegar `backend/` como contenedor y reemplazar `API_URL` en `netlify.toml` por su URL.
+4. Variables del backend en producción:
+   - `App__PublicUrl`: URL pública del front (p. ej. `https://tu-sitio.netlify.app`), para los regresos de Stripe.
+   - `Stripe__SecretKey`: llave secreta de Stripe (`sk_live_...` en producción).
+   - `Stripe__WebhookSecret`: secreto del webhook (`whsec_...`).
+5. En el Dashboard de Stripe, crear un webhook a `https://<API>/api/stripe/webhook` con los eventos
+   `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
+   `checkout.session.async_payment_failed` y `checkout.session.expired` (necesario para OXXO).
+
+## Pagos en desarrollo (Stripe en modo de prueba)
+
+```powershell
+dotnet user-secrets set "Stripe:SecretKey" 'sk_test_...' --project backend/Invitations.Api
+```
+
+Con la tarjeta de prueba `4242 4242 4242 4242` (cualquier fecha futura y CVC) el pago se confirma al regresar
+de Stripe. Para probar OXXO o el webhook en local se usa la [Stripe CLI](https://docs.stripe.com/stripe-cli)
+(`stripe listen --forward-to localhost:5080/api/stripe/webhook`) y su `whsec_...` en `Stripe:WebhookSecret`.
+
+Mientras un evento está en **borrador** (sin pagar), los invitados pueden ver la invitación pero no confirmar
+ni recibir QR, y las hostess no pueden entrar al escáner.
 
 ## Decisiones de producto
 
@@ -68,4 +88,5 @@ dotnet ef migrations add NombreDelCambio --project Invitations.Api --output-dir 
 - 1 invitación = 1 link/QR con N pases. El QR solo contiene un token aleatorio.
 - El invitado ve su QR después de confirmar asistencia; solo los confirmados entran al plano de mesas.
 - Plantillas fijas personalizables (configuración JSON guardada en `jsonb`).
-- Hostess entran con PIN del evento; el escáner funcionará sin conexión (PWA).
+- Hostess entran con link + PIN de 6 dígitos (bloqueo tras 5 intentos); pendiente: modo sin conexión (PWA).
+- Precios actuales de prueba: Básico $499 (100), Estándar $899 (250), Premium $1,499 (500) MXN.

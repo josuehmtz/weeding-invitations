@@ -391,7 +391,7 @@ namespace Invitations.Api.Data.Migrations
                             IsActive = true,
                             MaxPasses = 100,
                             Name = "Básico",
-                            PriceMxn = 0m
+                            PriceMxn = 499m
                         },
                         new
                         {
@@ -400,7 +400,7 @@ namespace Invitations.Api.Data.Migrations
                             IsActive = true,
                             MaxPasses = 250,
                             Name = "Estándar",
-                            PriceMxn = 0m
+                            PriceMxn = 899m
                         },
                         new
                         {
@@ -409,7 +409,7 @@ namespace Invitations.Api.Data.Migrations
                             IsActive = true,
                             MaxPasses = 500,
                             Name = "Premium",
-                            PriceMxn = 0m
+                            PriceMxn = 1499m
                         });
                 });
 

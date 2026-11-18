@@ -10,6 +10,9 @@ public static class RsvpRules
     public static string? BlockedReason(Event ev, DateTimeOffset now)
     {
         if (ev.Status == EventStatus.Archived) return "Este evento ya terminó.";
+        // Confirmar asistencia y recibir el QR es parte del servicio pagado.
+        if (ev.Status == EventStatus.Draft)
+            return "Esta invitación es una vista previa; podrás confirmar cuando los anfitriones la publiquen.";
         if (ev.StartsAt <= now) return "El evento ya comenzó; ya no es posible confirmar.";
         if (ev.RsvpDeadline is { } deadline && deadline < now)
             return "La fecha límite para confirmar ya pasó. Comunícate directamente con los anfitriones.";

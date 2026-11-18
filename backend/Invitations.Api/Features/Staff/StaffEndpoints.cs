@@ -45,8 +45,10 @@ public static class StaffEndpoints
 
         staff.MapPost("/login", async (LoginRequest req, HttpContext http, AppDbContext db, TimeProvider clock) =>
         {
-            var access = await db.StaffAccesses.FirstOrDefaultAsync(s => s.Id == req.AccessId);
+            var access = await db.StaffAccesses.Include(s => s.Event).FirstOrDefaultAsync(s => s.Id == req.AccessId);
             if (access is null) return Results.Problem("Este acceso no existe o fue eliminado.", statusCode: 404);
+            if (access.Event.Status == EventStatus.Draft)
+                return Results.Problem("El evento aún no está publicado. Pide a los organizadores que completen el pago.", statusCode: 403);
 
             var now = clock.GetUtcNow();
             switch (StaffRules.CheckCanLogin(access, now))

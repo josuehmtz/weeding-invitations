@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { deleteEvent, eventStatusLabels, eventTypeLabels, getEvent, updateEvent, type SaveEvent } from '../api/events'
+import BillingPanel from '../components/BillingPanel'
 import EventForm from '../components/EventForm'
 import InvitationsPanel from '../components/InvitationsPanel'
 import StaffAccessPanel from '../components/StaffAccessPanel'
@@ -126,6 +127,8 @@ export default function EventPage() {
           {remove.error && <p className="error">{remove.error.message}</p>}
         </section>
       )}
+
+      <BillingPanel eventId={ev.id} />
 
       {ev.invitationCount > 0 && (
         <section className="stats" aria-label="Resumen de confirmaciones">

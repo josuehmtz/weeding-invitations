@@ -31,9 +31,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             e.Property(x => x.Name).HasMaxLength(100);
             e.Property(x => x.PriceMxn).HasPrecision(10, 2);
             e.HasData(
-                new Plan { Id = 1, Code = "basico", Name = "Básico", MaxPasses = 100, PriceMxn = 0 },
-                new Plan { Id = 2, Code = "estandar", Name = "Estándar", MaxPasses = 250, PriceMxn = 0 },
-                new Plan { Id = 3, Code = "premium", Name = "Premium", MaxPasses = 500, PriceMxn = 0 });
+                // Precios de prueba; los definitivos se cambian con una migración.
+                new Plan { Id = 1, Code = "basico", Name = "Básico", MaxPasses = 100, PriceMxn = 499 },
+                new Plan { Id = 2, Code = "estandar", Name = "Estándar", MaxPasses = 250, PriceMxn = 899 },
+                new Plan { Id = 3, Code = "premium", Name = "Premium", MaxPasses = 500, PriceMxn = 1499 });
         });
 
         b.Entity<Event>(e =>
