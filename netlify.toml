@@ -3,11 +3,15 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  # Vite 8 requiere Node 20.19+ o 22.12+.
+  NODE_VERSION = "22"
+
 # Proxy: el navegador ve /api/* como mismo dominio (sin CORS, permite cookies httpOnly).
-# Reemplaza API_URL por la URL pública de tu backend (Cloud Run / Render).
+# Destino: la API en Google Cloud Run.
 [[redirects]]
   from = "/api/*"
-  to = "https://API_URL/api/:splat"
+  to = "https://invitations-api-563033774640.us-east1.run.app/api/:splat"
   status = 200
   force = true
 

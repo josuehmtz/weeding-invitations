@@ -1,0 +1,7 @@
+# Archivos que NO se suben a Google Cloud Build al desplegar (gcloud run deploy --source).
+.gcloudignore
+**/bin/
+**/obj/
+**/.vs/
+*.user
+Invitations.Tests/
