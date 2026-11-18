@@ -19,7 +19,8 @@ public static class EventEndpoints
         int InvitationCount, int TotalPasses, int PassLimit, RsvpSummaryDto Rsvp);
 
     /// <summary>Resumen de confirmaciones: invitaciones por estado y personas confirmadas.</summary>
-    public record RsvpSummaryDto(int Confirmed, int Declined, int Pending, int ConfirmedPasses, int PendingPasses);
+    public record RsvpSummaryDto(int Confirmed, int Declined, int Pending, int ConfirmedPasses, int PendingPasses,
+        int CheckedIn);
 
     public record SaveEventRequest(
         [property: Required, StringLength(200, MinimumLength = 1)] string Title,
@@ -124,7 +125,8 @@ public static class EventEndpoints
         var rsvp = new RsvpSummaryDto(
             CountOf(RsvpStatus.Confirmed), CountOf(RsvpStatus.Declined), CountOf(RsvpStatus.Pending),
             ConfirmedPasses: byStatus.Sum(x => x.Confirmed),
-            PendingPasses: byStatus.Where(x => x.Status == RsvpStatus.Pending).Sum(x => x.Passes));
+            PendingPasses: byStatus.Where(x => x.Status == RsvpStatus.Pending).Sum(x => x.Passes),
+            CheckedIn: await db.CheckIns.Where(c => c.Invitation.EventId == ev.Id).SumAsync(c => c.Count));
 
         return new EventDetailDto(
             ev.Id, ev.Title, ev.Type, ev.Status, ev.StartsAt, ev.VenueName, ev.VenueAddress,

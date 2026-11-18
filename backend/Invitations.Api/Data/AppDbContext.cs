@@ -21,6 +21,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     {
         base.OnModelCreating(b);
 
+        // Búsqueda sin acentos ("Gomez" encuentra "Gómez") en el buscador de las hostess.
+        b.HasPostgresExtension("unaccent");
+
         b.Entity<Plan>(e =>
         {
             e.HasIndex(x => x.Code).IsUnique();
@@ -73,6 +76,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 
         b.Entity<CheckIn>(e =>
         {
+            // Se agregan vía invitation.CheckIns con Id ya asignado (ver nota en Guest).
+            e.Property(x => x.Id).ValueGeneratedNever();
             e.HasOne(x => x.StaffAccess).WithMany()
                 .HasForeignKey(x => x.StaffAccessId).OnDelete(DeleteBehavior.SetNull);
         });

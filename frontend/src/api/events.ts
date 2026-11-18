@@ -40,6 +40,8 @@ export interface RsvpSummary {
   pending: number
   confirmedPasses: number
   pendingPasses: number
+  /** Personas que ya entraron (registradas por las hostess). */
+  checkedIn: number
 }
 
 export interface SaveEvent {

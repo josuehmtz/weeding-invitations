@@ -6,6 +6,7 @@ using Invitations.Api.Features.Events;
 using Invitations.Api.Features.Invitations;
 using Invitations.Api.Features.Plans;
 using Invitations.Api.Features.Public;
+using Invitations.Api.Features.Staff;
 using Invitations.Api.Features.Templates;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -44,7 +45,11 @@ builder.Services.AddDbContext<AppDbContext>(o =>
 
 // Identity con cookie httpOnly. El front llama a /api/* a través del proxy de Netlify
 // (o de Vite en desarrollo), así que la cookie es del mismo sitio.
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationBuilder()
+    // Las hostess usan su propia sesión, limitada a un evento (ver Features/Staff).
+    .AddPolicy(StaffAuth.Policy, p => p
+        .AddAuthenticationSchemes(StaffAuth.Scheme)
+        .RequireClaim(StaffAuth.AccessClaim));
 builder.Services
     .AddIdentityApiEndpoints<AppUser>(o =>
     {
@@ -64,6 +69,18 @@ builder.Services.ConfigureApplicationCookie(o =>
     o.ExpireTimeSpan = TimeSpan.FromDays(14);
     o.SlidingExpiration = true;
 });
+
+builder.Services.AddAuthentication()
+    .AddCookie(StaffAuth.Scheme, o =>
+    {
+        o.Cookie.Name = "inv_staff";
+        o.Cookie.HttpOnly = true;
+        o.Cookie.SameSite = SameSiteMode.Lax;
+        o.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        // Es una API: responder 401/403 en vez de redirigir a una página de login.
+        o.Events.OnRedirectToLogin = ctx => { ctx.Response.StatusCode = 401; return Task.CompletedTask; };
+        o.Events.OnRedirectToAccessDenied = ctx => { ctx.Response.StatusCode = 403; return Task.CompletedTask; };
+    });
 
 // Detrás de proxies (Netlify, Cloud Run) para conocer el esquema/IP reales.
 builder.Services.Configure<ForwardedHeadersOptions>(o =>
@@ -106,5 +123,7 @@ api.MapEventEndpoints();
 api.MapInvitationEndpoints();
 api.MapTemplateEndpoints();
 api.MapPublicInvitationEndpoints();
+api.MapStaffAccessEndpoints();
+api.MapStaffEndpoints();
 
 app.Run();

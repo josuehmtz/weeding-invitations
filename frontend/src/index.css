@@ -212,3 +212,53 @@ td.phone { white-space: nowrap; }
   .rsvp-form { grid-template-columns: 1fr 1fr; }
   .rsvp-form strong { grid-column: span 2; }
 }
+
+/* --- Accesos de hostess (panel del cliente) --- */
+.staff-form { grid-template-columns: minmax(0, 1fr) auto; }
+.pin-box { border: 1px dashed var(--accent); border-radius: 10px; padding: 14px; display: grid; gap: 6px; background: var(--accent-soft); }
+.pin { font-size: 2.2rem; font-weight: 600; letter-spacing: 0.3em; font-variant-numeric: tabular-nums; margin: 0; }
+.staff-link { font-size: 0.85rem; overflow-wrap: anywhere; }
+.staff-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.staff-list li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.staff-list li > div { display: grid; }
+
+/* --- Escáner de hostess --- */
+.scanner { gap: 14px; }
+.scanner-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.scanner-header > div { display: grid; }
+.scanner-counter { text-align: right; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.scanner-camera { position: relative; width: 100%; aspect-ratio: 1; border-radius: 16px; overflow: hidden; background: #000; }
+.scanner-camera video { width: 100%; height: 100%; object-fit: cover; }
+.scanner-camera-error { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: #fff; background: rgba(0, 0, 0, 0.75); margin: 0; }
+.scan-alert { border: 1px solid var(--error); border-radius: 10px; padding: 12px; display: grid; gap: 8px; justify-items: start; color: var(--error); }
+.center { text-align: center; }
+.logout { justify-self: center; margin-top: 8px; }
+
+.pin-form { justify-items: center; }
+.pin-input { font-size: 2rem; letter-spacing: 0.4em; text-align: center; width: 100%; max-width: 260px; font-variant-numeric: tabular-nums; }
+
+.result-card { border-width: 2px; }
+.result-card.ok { border-color: var(--ok); }
+.result-card.full { border-color: var(--error); }
+.result-banner { margin: 0; font-weight: 600; color: var(--ok); }
+.result-name { font-size: 1.8rem; overflow-wrap: anywhere; }
+.result-table { font-size: 2.2rem; font-weight: 700; color: var(--accent); margin: 0; }
+.result-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; }
+.result-facts div { border: 1px solid var(--border); border-radius: 8px; padding: 8px; text-align: center; }
+.result-facts dt { font-size: 0.8rem; color: var(--text-muted); }
+.result-facts dd { margin: 0; font-size: 1.4rem; font-weight: 600; }
+.result-warning { margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--warn-soft); }
+.result-guests { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.result-guests li { display: flex; justify-content: space-between; gap: 8px; }
+.checkin-row { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; }
+.stepper { display: flex; align-items: center; gap: 10px; }
+.stepper span { min-width: 1.5em; text-align: center; font-size: 1.4rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stepper button { width: 44px; height: 44px; padding: 0; font-size: 1.4rem; }
+button.big { padding: 12px 16px; font-size: 1.05rem; }
+.result-card .actions { display: grid; grid-template-columns: 1fr auto; }
+
+.search { display: grid; gap: 10px; }
+.search input { font-size: 1.1rem; padding: 12px; }
+.search-results { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.search-results button { width: 100%; display: grid; text-align: left; white-space: normal; padding: 10px 12px; }

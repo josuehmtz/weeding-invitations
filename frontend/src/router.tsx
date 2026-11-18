@@ -26,4 +26,5 @@ export const router = createBrowserRouter([
   { path: '/i/:token', element: <InvitationPage /> },
   // Hostess el día del evento.
   { path: '/staff', element: <ScannerPage /> },
+  { path: '/staff/:accessId', element: <ScannerPage /> },
 ])

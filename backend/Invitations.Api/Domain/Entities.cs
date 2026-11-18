@@ -134,6 +134,11 @@ public class StaffAccess
     public string Label { get; set; } = "";
     public string PinHash { get; set; } = "";
     public DateTimeOffset ExpiresAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+    /// <summary>Intentos de PIN fallidos seguidos; al llegar al máximo se bloquea un rato.</summary>
+    public int FailedAttempts { get; set; }
+    public DateTimeOffset? LockedUntil { get; set; }
 }
 
 public class Order

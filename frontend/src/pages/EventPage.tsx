@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router'
 import { deleteEvent, eventStatusLabels, eventTypeLabels, getEvent, updateEvent, type SaveEvent } from '../api/events'
 import EventForm from '../components/EventForm'
 import InvitationsPanel from '../components/InvitationsPanel'
+import StaffAccessPanel from '../components/StaffAccessPanel'
 import { formatDateTime } from '../lib/dates'
 import { plural } from '../lib/text'
 
@@ -139,6 +140,12 @@ export default function EventPage() {
             <span className="stat-value">{ev.rsvp.declined}</span>
             <span className="stat-label">{ev.rsvp.declined === 1 ? 'invitación no asistirá' : 'invitaciones no asistirán'}</span>
           </div>
+          {ev.rsvp.checkedIn > 0 && (
+            <div className="stat">
+              <span className="stat-value">{ev.rsvp.checkedIn}</span>
+              <span className="stat-label">{ev.rsvp.checkedIn === 1 ? 'persona ha llegado' : 'personas han llegado'}</span>
+            </div>
+          )}
         </section>
       )}
 
@@ -149,6 +156,8 @@ export default function EventPage() {
         remainingPasses={remaining}
         readOnly={readOnly}
       />
+
+      <StaffAccessPanel eventId={ev.id} eventTitle={ev.title} readOnly={readOnly} />
     </main>
   )
 }
