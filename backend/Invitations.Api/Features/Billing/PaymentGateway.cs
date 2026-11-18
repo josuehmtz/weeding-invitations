@@ -5,10 +5,15 @@ namespace Invitations.Api.Features.Billing;
 
 public class StripeOptions
 {
+    private string? _secretKey;
+    private string? _webhookSecret;
+
+    // Trim: los secretos pegados en consola (Secret Manager) a veces traen un salto de línea al final.
+
     /// <summary>Llave secreta (sk_test_... en pruebas). Se guarda con user-secrets o variable de entorno, nunca en el repo.</summary>
-    public string? SecretKey { get; set; }
+    public string? SecretKey { get => _secretKey; set => _secretKey = value?.Trim(); }
     /// <summary>Secreto de firma del webhook (whsec_...).</summary>
-    public string? WebhookSecret { get; set; }
+    public string? WebhookSecret { get => _webhookSecret; set => _webhookSecret = value?.Trim(); }
 }
 
 public record CheckoutRequest(

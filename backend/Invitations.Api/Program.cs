@@ -11,6 +11,7 @@ using Invitations.Api.Features.Seating;
 using Invitations.Api.Features.Staff;
 using Invitations.Api.Features.Templates;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -88,6 +89,11 @@ builder.Services.AddAuthentication()
         o.Events.OnRedirectToAccessDenied = ctx => { ctx.Response.StatusCode = 403; return Task.CompletedTask; };
     });
 
+// Llaves de cifrado de cookies en la base (ver AppDbContext.DataProtectionKeys).
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<AppDbContext>()
+    .SetApplicationName("invitations");
+
 // Detrás de proxies (Netlify, Cloud Run) para conocer el esquema/IP reales.
 builder.Services.Configure<ForwardedHeadersOptions>(o =>
 {
@@ -108,11 +114,12 @@ app.UseExceptionHandler(new ExceptionHandlerOptions
 app.UseStatusCodePages();
 
 if (app.Environment.IsDevelopment())
-{
     app.MapOpenApi();
 
-    // En desarrollo aplicamos migraciones al iniciar. En producción se corren a mano
-    // (dotnet ef database update) para controlar cuándo cambia el esquema.
+// Migraciones al iniciar: siempre en desarrollo, y en producción si Database__MigrateOnStartup=true.
+// EF Core toma un bloqueo en la base, así que es seguro aunque arranquen varias instancias a la vez.
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+{
     using var scope = app.Services.CreateScope();
     scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
 }

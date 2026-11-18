@@ -12,6 +12,8 @@ public static class ConnectionStrings
     {
         if (string.IsNullOrWhiteSpace(value))
             throw new InvalidOperationException("Falta la cadena de conexión 'ConnectionStrings:Default'.");
+        // Los secretos pegados en consola a veces traen un salto de línea al final.
+        value = value.Trim();
 
         if (!value.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) &&
             !value.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))

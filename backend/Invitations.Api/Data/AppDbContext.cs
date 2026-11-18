@@ -1,4 +1,5 @@
 using Invitations.Api.Domain;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -6,8 +7,14 @@ using Microsoft.EntityFrameworkCore;
 namespace Invitations.Api.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options)
-    : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>(options)
+    : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>(options), IDataProtectionKeyContext
 {
+    /// <summary>
+    /// Llaves con las que ASP.NET cifra las cookies de sesión. Se guardan en la base para que sigan
+    /// siendo válidas cuando Cloud Run recrea el contenedor (si no, todos perderían su sesión).
+    /// </summary>
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
+
     public DbSet<Plan> Plans => Set<Plan>();
     public DbSet<Event> Events => Set<Event>();
     public DbSet<EventTable> Tables => Set<EventTable>();
