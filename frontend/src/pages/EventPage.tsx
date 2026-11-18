@@ -100,6 +100,9 @@ export default function EventPage() {
 
           {!readOnly && (
             <div className="actions">
+              <Link to={`/app/events/${ev.id}/design`} className="button">
+                Diseñar invitación
+              </Link>
               <button className="secondary" onClick={() => setEditing(true)}>
                 Editar datos
               </button>

@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router'
 import AppLayout from './components/AppLayout'
 import DashboardPage from './pages/DashboardPage'
+import DesignPage from './pages/DesignPage'
 import EventPage from './pages/EventPage'
 import HomePage from './pages/HomePage'
 import InvitationPage from './pages/InvitationPage'
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'events/:id', element: <EventPage /> },
+      { path: 'events/:id/design', element: <DesignPage /> },
     ],
   },
   // Invitación pública de cada invitado (link y QR).

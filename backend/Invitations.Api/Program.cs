@@ -5,6 +5,9 @@ using Invitations.Api.Features.Auth;
 using Invitations.Api.Features.Events;
 using Invitations.Api.Features.Invitations;
 using Invitations.Api.Features.Plans;
+using Invitations.Api.Features.Public;
+using Invitations.Api.Features.Templates;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +26,16 @@ builder.Services.AddValidation();
 // Enums como texto en JSON ("Wedding" en vez de 0): más legible para el front.
 builder.Services.ConfigureHttpJsonOptions(o =>
     o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+// Límite de peticiones por IP para los endpoints públicos (links de invitación).
+builder.Services.AddRateLimiter(o =>
+{
+    o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    o.AddPolicy(PublicInvitationEndpoints.RateLimitPolicy, ctx =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions { PermitLimit = 60, Window = TimeSpan.FromMinutes(1) }));
+});
 
 builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseNpgsql(ConnectionStrings.Normalize(builder.Configuration.GetConnectionString("Default"))));
@@ -81,6 +94,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 var api = app.MapGroup("/api");
 api.MapGet("/health", () => Results.Ok(new { status = "ok" }));
@@ -88,5 +102,7 @@ api.MapAuthEndpoints();
 api.MapPlanEndpoints();
 api.MapEventEndpoints();
 api.MapInvitationEndpoints();
+api.MapTemplateEndpoints();
+api.MapPublicInvitationEndpoints();
 
 app.Run();

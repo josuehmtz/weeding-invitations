@@ -133,6 +133,9 @@ export default function InvitationsPanel({ eventId, remainingPasses, readOnly }:
                       <span className={`badge rsvp-${inv.rsvpStatus.toLowerCase()}`}>{rsvpLabels[inv.rsvpStatus]}</span>
                     </td>
                     <td className="row-actions">
+                      <a className="button secondary small" href={`/i/${inv.token}`} target="_blank" rel="noreferrer">
+                        Ver
+                      </a>
                       <button className="secondary small" onClick={() => copyLink(inv)}>
                         {copiedId === inv.id ? '¡Copiado!' : 'Copiar link'}
                       </button>
