@@ -1,0 +1,23 @@
+# Node / Vite
+node_modules/
+dist/
+*.local
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# Entorno y secretos
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+
+# Editor / SO
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
